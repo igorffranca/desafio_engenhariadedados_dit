@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgis/postgis:13-3.1
+    environment:
+      POSTGRES_DB: brt_data
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  prefect:
+    image: prefecthq/prefect:0.15.9
+    depends_on:
+      - postgres
+    environment:
+      - PREFECT__FLOWS__STORAGE=local
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/opt/prefect/flows
+
+volumes:
+  postgres_data:
